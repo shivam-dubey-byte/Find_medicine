@@ -6,7 +6,7 @@ const SearchChat = () => {
   const [file, setFile] = useState(null);
   const [messages, setMessages] = useState([]);
   const [medicineInfo, setMedicineInfo] = useState(null); // State to store parsed medicine info
-  const { darkMode, toggleDarkMode } = useContext(ThemeContext);
+  const { darkMode } = useContext(ThemeContext);
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -38,7 +38,7 @@ const SearchChat = () => {
         method: 'POST',
         body: formData,
       });
-
+      console.log(response);
       if (!response.ok) {
         throw new Error('Failed to fetch medicine info');
       }
@@ -87,20 +87,6 @@ const SearchChat = () => {
         <div style={{ textAlign: 'center', marginBottom: '20px' }}>
           <h1 style={{ marginBottom: '10px' }}>Medicine Image Search</h1>
           <p>Upload an image to get information about the medicine.</p>
-          <button
-            onClick={toggleDarkMode}
-            style={{
-              marginTop: '10px',
-              padding: '10px 20px',
-              background: darkMode ? '#555' : '#4caf50',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '5px',
-              cursor: 'pointer',
-            }}
-          >
-            Toggle Dark Mode
-          </button>
         </div>
 
         <div
@@ -110,10 +96,11 @@ const SearchChat = () => {
             padding: '20px',
           }}
         >
+          {/* Centered Buttons */}
           <div
             style={{
               display: 'flex',
-              alignItems: 'center',
+              justifyContent: 'center',
               gap: '10px',
               marginBottom: '20px',
             }}
@@ -154,6 +141,7 @@ const SearchChat = () => {
             </button>
           </div>
 
+          {/* Messages and Medicine Info */}
           <div
             style={{
               height: '300px',

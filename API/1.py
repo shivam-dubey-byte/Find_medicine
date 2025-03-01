@@ -2,22 +2,9 @@ from fastapi import FastAPI, File, UploadFile, HTTPException
 import easyocr
 import requests
 import os
-from fastapi.middleware.cors import CORSMiddleware
 
 # Initialize the EasyOCR reader
 reader = easyocr.Reader(['en'])  # Specify languages (e.g., 'en' for English)
-
-# Initialize FastAPI app
-app = FastAPI(title="Medicine Information API")  # Ensure this line is present
-
-# Add CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Allow requests from ALL origins
-    allow_credentials=False,
-    allow_methods=["*"],  # Allow all HTTP methods
-    allow_headers=["*"],  # Allow all headers
-)
 
 # Function to extract text from an image
 def extract_text_from_image(image_path):
@@ -50,32 +37,18 @@ def get_medicine_info_using_openrouter(text):
     except Exception as e:
         return f"Error: {e}"
 
-# API endpoint to upload an image and get medicine information
-@app.post("/medicine-info")
-async def medicine_info(file: UploadFile = File(...)):
-    try:
-        # Save the uploaded file temporarily
-        file_path = f"temp_{file.filename}"
-        with open(file_path, "wb") as buffer:
-            buffer.write(file.file.read())
-            print(file_path)
+# Main function
+def main():
+    # Path to the image file
+    image_path = "medicine.jpg"  # Replace with the path to your image
 
-        # Step 1: Extract text from the image
-        extracted_text = extract_text_from_image(file_path)
+    # Step 1: Extract text from the image
+    extracted_text = extract_text_from_image(image_path)
 
-        # Step 2: Get medicine information using OpenRouter API
-        medicine_info = get_medicine_info_using_openrouter(extracted_text)
+    # Step 2: Get medicine information using OpenRouter API
+    print("\nFetching medicine information from OpenRouter API...")
+    medicine_info = get_medicine_info_using_openrouter(extracted_text)
+    print("Medicine Information:\n", medicine_info)
 
-        # Clean up: Delete the temporary file
-        os.remove(file_path)
-
-        # Return the medicine information
-        return {"medicine_info": medicine_info}
-
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"An error occurred: {e}")
-
-# Run the FastAPI app
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8001)
+    main()
